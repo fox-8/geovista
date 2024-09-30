@@ -59,7 +59,7 @@ jobs:
     - name: "lock (${{ matrix.version }})"
       env:
         VTK_BUILD: "  - vtk=*=qt_*"
-      working-directory: requirements
+      working-directory: requirements/locks
       run: |
         which conda
         which mamba
@@ -67,6 +67,7 @@ jobs:
         conda install --channel conda-forge jinja2 conda-lock
         conda info
         conda list
+        cp ../geovista.yml .
         python -c 'from sys import version_info as v; open("geovista.yml", "a").write(f"\n  - python ={v.major}.{v.minor}\n${{ env.VTK_BUILD }}")'
         echo "---- begin ----"
         cat geovista.yml
