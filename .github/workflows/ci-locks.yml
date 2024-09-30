@@ -42,18 +42,9 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: "environment configure"
-      env:
-        # Maximum cache period (in weeks) before forcing a cache refresh.
-        CACHE_WEEKS: 2
+    - name: default
       run: |
-        echo "CACHE_PERIOD=$(date +%Y).$(expr $(date +%U) / ${CACHE_WEEKS})" >> ${GITHUB_ENV}
-
-    - name: "conda package cache"
-      uses: ./.github/workflows/composite/conda-pkg-cache
-      with:
-        cache_period: ${{ env.CACHE_PERIOD }}
-        env_name: ${{ env.ENV_NAME }}
+        which conda
 
     - name: "conda install"
       uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca
@@ -65,18 +56,6 @@ jobs:
         activate-environment: ${{ env.ENV_NAME }}
         use-only-tar-bz2: false
 
-    - name: "conda environment cache"
-      uses: ./.github/workflows/composite/conda-env-cache
-      with:
-        cache_period: ${{ env.CACHE_PERIOD }}
-        env_name: ${{ env.ENV_NAME }}
-        install_packages: "pip jinja2 conda-lock"
-
-    - name: "conda info"
-      run: |
-        conda info
-        conda list
-
     - name: "lock (${{ matrix.version }})"
       env:
         VTK_BUILD: "  - vtk=*=qt_*"
@@ -84,6 +63,10 @@ jobs:
       run: |
         which conda
         which mamba
+        which python
+        conda install --channel conda-forge jinja2 conda-lock
+        conda info
+        conda list
         python -c 'from sys import version_info as v; open("geovista.yml", "a").write(f"\n  - python ={v.major}.{v.minor}\n${{ env.VTK_BUILD }}")'
         echo "---- begin ----"
         cat geovista.yml
