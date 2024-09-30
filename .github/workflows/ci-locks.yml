@@ -70,7 +70,7 @@ jobs:
       with:
         cache_period: ${{ env.CACHE_PERIOD }}
         env_name: ${{ env.ENV_NAME }}
-        install_packages: "pip mamba jinja2 conda-lock"
+        install_packages: "pip jinja2 conda-lock"
 
     - name: "conda info"
       run: |
@@ -82,6 +82,8 @@ jobs:
         VTK_BUILD: "  - vtk=*=qt_*"
       working-directory: requirements
       run: |
+        which conda
+        which mamba
         python -c 'from sys import version_info as v; open("geovista.yml", "a").write(f"\n  - python ={v.major}.{v.minor}\n${{ env.VTK_BUILD }}")'
         echo "---- begin ----"
         cat geovista.yml
