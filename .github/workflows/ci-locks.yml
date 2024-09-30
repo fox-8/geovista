@@ -42,37 +42,45 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: default
+    - name: "environment configure"
+      env:
+        # Maximum cache period (in weeks) before forcing a cache refresh.
+        CACHE_WEEKS: 2
       run: |
-        which conda
+        echo "CACHE_PERIOD=$(date +%Y).$(expr $(date +%U) / ${CACHE_WEEKS})" >> ${GITHUB_ENV}
+
+    - name: "conda package cache"
+      uses: ./.github/workflows/composite/conda-pkg-cache
+      with:
+        cache_period: ${{ env.CACHE_PERIOD }}
+        env_name: ${{ env.ENV_NAME }}
 
     - name: "conda install"
       uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca
       with:
         miniforge-version: latest
-#        channels: conda-forge,defaults
-#        channel-priority: true
-#        auto-update-conda: true
         activate-environment: ${{ env.ENV_NAME }}
         use-only-tar-bz2: false
+
+    - name: "conda environment cache"
+      uses: ./.github/workflows/composite/conda-env-cache
+      with:
+        cache_period: ${{ env.CACHE_PERIOD }}
+        env_name: ${{ env.ENV_NAME }}
+        install_packages: "jinja2 conda-lock"
+
+    - name: "conda info"
+      run: |
+        conda info
+        conda list
 
     - name: "lock (${{ matrix.version }})"
       env:
         VTK_BUILD: "  - vtk=*=qt_*"
       working-directory: requirements/locks
       run: |
-        which conda
-        which mamba
-        which python
-        conda install --channel conda-forge jinja2 conda-lock
-        conda info
-        conda list
-        cp ../geovista.yml .
-        python -c 'from sys import version_info as v; open("geovista.yml", "a").write(f"\n  - python ={v.major}.{v.minor}\n${{ env.VTK_BUILD }}")'
-        echo "---- begin ----"
-        cat geovista.yml
-        echo "---- end ----"
-        conda-lock --mamba --channel conda-forge --kind explicit --file geovista.yml --platform linux-64 --filename-template "${{ matrix.version }}-{platform}.txt"
+        python -c 'from sys import version_info as v; open("../geovista.yml", "a").write(f"\n  - python ={v.major}.{v.minor}\n${{ env.VTK_BUILD }}\n")'
+        conda-lock --mamba --channel conda-forge --kind explicit --file ../geovista.yml --platform linux-64 --filename-template "${{ matrix.version }}-{platform}.txt"
         python lock2yaml.py ${{ matrix.version }}
 
     - uses: actions/upload-artifact@v4
