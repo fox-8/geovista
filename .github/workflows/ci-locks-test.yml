@@ -70,7 +70,7 @@ jobs:
         pytest
 
     - name: "report failure"
-      if: steps.pytest.outcome == "failure"
+      if: steps.pytest.outcome == 'failure'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
