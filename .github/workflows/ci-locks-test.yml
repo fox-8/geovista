@@ -67,6 +67,7 @@ jobs:
     - name: "test lock (${{ matrix.version }})"
       id: pytest
       run: |
+        pip install --no-deps -e .
         pytest
 
     - name: "report failure"
