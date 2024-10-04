@@ -68,10 +68,10 @@ jobs:
       id: pytest
       run: |
         pip install --no-deps -e .
-        pytest
+        pytest -m "not image"
 
     - name: "report failure"
-      if: steps.pytest.outcome == 'failure'
+      if: ${{ failure() }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
