@@ -75,11 +75,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         TITLE="chore: conda lock test failure"
-        BODY=$(cat <<EOF
-        The `${{ matrix.version }}` tests against the latest resolved `conda-lock` environment have failed.
- 
+        BODY=$(cat <<EOL
+        The `${{ matrix.version }}` tests against the latest resolved `conda-lock` environment have failed.\n
         Please investigate GHA run-id [#${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
-        EOF
+        EOL
         )
-        BODY="Investigate GHA run #[${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
-        gh issue create --title "${TITLE}" --body "${BODY}" --label "bot" --label "new: issue" --repo "${{ github.repository }}"
+        gh issue create --title "${TITLE}" --body "$(echo -e ${BODY})" --label "bot" --label "new: issue" --repo "${{ github.repository }}"
