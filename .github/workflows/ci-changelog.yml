@@ -1,9 +1,7 @@
 # Reference:
 #   - https://github.com/actions/checkout
 #   - https://github.com/actions/setup-python
-#   - https://github.com/jwalton/gh-find-current-pr
 #   - https://github.com/snnaplab/get-labels-action
-#   - https://github.com/jitterbit/get-changed-files (don't use - abandoned repo?)
 #   - https://github.com/dorny/paths-filter
 
 
