@@ -42,7 +42,7 @@ jobs:
           python-version: '3.x'
 
       - name: 'get PR number'
-        uses: jwalton/gh-find-current-pr@89ee5799558265a1e0e31fab792ebb4ee91c016b
+        uses: 8BitJonny/gh-get-current-pr@3.0.0
         id: pr
 
       - name: 'get PR labels'
@@ -60,6 +60,10 @@ jobs:
       - name: 'validate changelog'
         if: ${{ ! contains(fromJSON(env.LABELS), 'skip changelog') }}
         run: |
+          echo "found PR: [${{ steps.pr.outputs.number }}] <-----------"
+          echo "github.event_name = [${{ github.event_name }}]"
+          echo "github.event.number = [${{ github.event.number }}]"
+          echo "github.event.pull_request.number = [${{ github.event.pull_request.number }}]"
           python -m pip install click towncrier
           python -c "import sys; print(f'version = {sys.version}')"
           towncrier --version
